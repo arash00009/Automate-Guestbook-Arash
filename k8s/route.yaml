@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1                                         
+kind: Route                                                               
+metadata:                                                                 
+  name: arash-nginx-demo                                                        
+  labels:                                                                 
+    app: arash-nginx-demo                                                       
+spec:                                                                     
+  to:                                                                     
+    kind: Service                                                         
+    name: arash-nginx-demo                                                      
+    weight: 100
