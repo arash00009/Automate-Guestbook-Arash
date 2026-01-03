@@ -1,18 +1,18 @@
 apiVersion: apps/v1                                                       
 kind: Deployment                                                          
 metadata:                                                                 
-  name: arash-argocd-demo                                                        
+  name: arash-guestbook-deployment                                               
   labels:                                                                 
-    app: arash-argocd-demo                                                       
+    app: arash-guestbook-deployment                                                       
 spec:                                                                     
   replicas: 2                                                            
   selector:                                                               
     matchLabels:                                                          
-      app: arash-argocd-demo                                                     
+      app: arash-guestbook-deployment                                                     
   template:                                                               
     metadata:                                                             
       labels:                                                             
-        app: arash-argocd-demo                                                   
+        app: arash-guestbook-deployment                                                     
     spec:                                                                 
       containers:                                                         
         - name: nginx                                                       
