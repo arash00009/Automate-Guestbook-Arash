@@ -3,7 +3,7 @@ kind: Service
 metadata:                                                                 
   name: arash-nginx-guestbook
   labels:
-    app: arash-nginx-guestbook
+    app: arash-nginx-guestbookk
 spec:
   type: ClusterIP
   ports:
