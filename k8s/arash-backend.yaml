@@ -14,7 +14,7 @@ kind: Deployment
 metadata:
   name: arash-postgres
 spec:
-  replicas: 4
+  replicas: 1
   selector:
     matchLabels:
       app: arash-guestbook
@@ -47,6 +47,13 @@ spec:
           volumeMounts:
             - name: arash-postgres-data
               mountPath: /var/lib/postgresql
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
       volumes:
         - name: arash-postgres-data
           persistentVolumeClaim:
@@ -81,7 +88,7 @@ kind: Deployment
 metadata:
   name: arash-redis
 spec:
-  replicas: 4
+  replicas: 1
   selector:
     matchLabels:
       app: arash-guestbook
@@ -104,6 +111,13 @@ spec:
           volumeMounts:
             - name: arash-redis-data
               mountPath: /var/lib/redis/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
       volumes:
         - name: arash-redis-data
           persistentVolumeClaim:
@@ -140,6 +154,7 @@ spec:
       containers:
         - name: backend
           image: arashr/arash-guestbook:backend
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
@@ -163,6 +178,13 @@ spec:
                 secretKeyRef:
                   name: arash-redis-password
                   key: password
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
