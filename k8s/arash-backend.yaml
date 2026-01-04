@@ -14,7 +14,7 @@ kind: Deployment
 metadata:
   name: arash-postgres
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       app: arash-guestbook
@@ -81,7 +81,7 @@ kind: Deployment
 metadata:
   name: arash-redis
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       app: arash-guestbook
