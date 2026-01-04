@@ -1,67 +1,66 @@
-# PostgreSQL
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pvc
+  name: arash-postgres-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
-  storageClassName: gp3
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: arash-postgres
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: arash-guestbook
+      component: postgres
   template:
     metadata:
       labels:
-        app: postgres
+        app: arash-guestbook
+        component: postgres
     spec:
       containers:
         - name: postgres
-          image: quay.io/fedora/postgresql-16:latest
-          ports:
-            - containerPort: 5432
+          image: postgres:15
           env:
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: db-password
+                  name: arash-db-password
                   key: username
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-password
+                  name: arash-db-password
                   key: password
             - name: POSTGRESQL_DATABASE
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: arash-db-config
                   key: db-name
           volumeMounts:
-            - name: postgres-data
+            - name: arash-postgres-data
               mountPath: /var/lib/postgresql
       volumes:
-        - name: postgres-data
+        - name: arash-postgres-data
           persistentVolumeClaim:
-            claimName: postgres-pvc
+            claimName: arash-postgres-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: arash-postgres
 spec:
   type: ClusterIP
   selector:
-    app: postgres
+    app: arash-guestbook
+    component: postgres
   ports:
     - port: 5432
 ---
@@ -69,109 +68,110 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: redis-pvc
+  name: arash-redis-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
-  storageClassName: gp3
+      storage: 5Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: arash-redis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app: arash-guestbook
+      component: redis
   template:
     metadata:
       labels:
-        app: redis
+        app: arash-guestbook
+        component: redis
     spec:
       containers:
         - name: redis
-          image: quay.io/kurs/redis:latest
-          ports:
-            - containerPort: 6379
+          image: redis:7-alpine
           env:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: redis-password
+                  name: arash-redis-password
                   key: password
           volumeMounts:
-            - name: redis-data
+            - name: arash-redis-data
               mountPath: /var/lib/redis/data
       volumes:
-        - name: redis-data
+        - name: arash-redis-data
           persistentVolumeClaim:
-            claimName: redis-pvc
+            claimName: arash-redis-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: arash-redis
 spec:
   type: ClusterIP
   selector:
-    app: redis
+    app: arash-guestbook
+    component: redis
   ports:
     - port: 6379
-
-# Golang Backend
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: arash-backend
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: backend
+      app: arash-guestbook
+      component: backend
   template:
     metadata:
       labels:
-        app: backend
+        app: arash-guestbook
+        component: backend
     spec:
       containers:
         - name: backend
-          image: quay.io/hardo314/golang-backend:latest
+          image: ghcr.io/billare/guestbook-backend:latest
           ports:
             - containerPort: 8080
           env:
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: arash-db-config
                   key: db-host
             - name: REDIS_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: arash-db-config
                   key: redis-host
             - name: REDIS_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: arash-db-config
                   key: redis-port
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: redis-password
+                  name: arash-redis-password
                   key: password
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend
+  name: arash-backend
 spec:
   type: ClusterIP
   selector:
-    app: backend
+    app: arash-guestbook
+    component: backend
   ports:
     - port: 8080
