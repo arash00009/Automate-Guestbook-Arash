@@ -139,7 +139,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/billare/guestbook-backend:latest
+          image: arashr/arash-guestbook:backend
           ports:
             - containerPort: 8080
           env:
